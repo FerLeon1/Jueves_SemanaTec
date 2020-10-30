@@ -8,6 +8,7 @@ state = {'mark': None}
 hide = [True] * 64
 state2 = {'click': 0}
 writer = Turtle(visible=False)
+GuessedTiles = 0
 
 def square(x, y):
     "Draw white square with black outline at (x, y)."
@@ -30,17 +31,26 @@ def xy(count):
     return (count % 8) * 50 - 200, (count // 8) * 50 - 200
 
 def tap(x, y):
-    "Update mark and hidden tiles based on tap."
+    "Update mark and hidden tiles based on tap, and detect if player has won."
+    global GuessedTiles
+    if GuessedTiles == 64:
+        up()
+        goto(-100, 200)
+        color("blue")
+        write("GANASTE", font = ("Arial", 10, "normal"))
+        return
     spot = index(x, y)
     mark = state['mark']
    
     if mark is None or mark == spot or tiles[mark] != tiles[spot]:
-        state['mark'] = spot
-        
+        state['mark'] = spot        
     else:
         hide[spot] = False
         hide[mark] = False
         state['mark'] = None
+        GuessedTiles += 2
+        print(GuessedTiles)
+
     state2['click'] += 1
     writer.undo()
     writer.write(state2['click'], font= ("Arial", 15, "normal"))#este imprime todos los demás
@@ -62,9 +72,9 @@ def draw():
     if mark is not None and hide[mark]:
         x, y = xy(mark)
         up()
-        goto(x + 2, y)
+        goto(x + 26, y + 10)
         color('black')
-        write(tiles[mark], font=('Arial', 30, 'normal'))
+        write(tiles[mark], align = "center", font=('Arial', 20, 'normal'))
 
     update()
     ontimer(draw, 100)
